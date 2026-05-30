@@ -47,7 +47,6 @@ El objetivo central es demostrar la capacidad de conectar APIs externas, procesa
 ```
 n8n-retos/
 ├── README.md                        ← Este archivo
-├── docker-compose.yml               ← Configuración Docker compartida
 │
 ├── Conversor Inteligente de Monedas/
 │   └── README.md                    ← Documentación completa del Reto 1
