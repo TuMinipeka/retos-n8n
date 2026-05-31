@@ -162,13 +162,11 @@ Este nodo inyecta el listado de ciudades que serán consultadas.
 3. Pega el siguiente código:
 
 ```javascript
-const ciudades = [
-  { ciudad: "Giron,CO" },
-  { ciudad: "Bucaramanga,CO" },
-  { ciudad: "Bogota,CO" }
+return [
+  { json: { ciudad: "Giron, CO" } },
+  { json: { ciudad: "Bucaramanga, CO" } },
+  { json: { ciudad: "Bogota, CO" } }
 ];
-
-return ciudades.map(item => ({ json: item }));
 ```
 
 4. Haz clic en **"Execute Node"** para verificar que genera 3 ítems correctamente
