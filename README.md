@@ -232,7 +232,7 @@ docker logs -f n8n        # Ver logs en tiempo real
 **Diego Mantilla**
 
 
-[![GitHub](https://img.shields.io/badge/GitHub-TuMinipeka-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/DMntill4)
+[![GitHub](https://img.shields.io/badge/GitHub-DMntill4-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/DMntill4)
 
 
 Desarrollo del workflow · Documentacion · Pruebas
