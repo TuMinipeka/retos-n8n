@@ -14,11 +14,6 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
 [![Estado](https://img.shields.io/badge/Estado-Activo-4CAF50?style=for-the-badge)](.)
 
-<br>
-
-*Automatizacion inteligente que consulta el clima en tiempo real y envia alertas a Discord*
-*unicamente cuando la probabilidad de lluvia supera el umbral critico del 70%.*
-
 </div>
 
 <br>
