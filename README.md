@@ -79,6 +79,28 @@ Schedule Trigger  ──►  HTTP Request  ──►  Code  ──►  Discord
 
 ---
 
+## Reto 2 — [Sistema de Alertas Climáticas](./Sistema%20de%20Alertas%20Clim%C3%A1ticas/README.md)
+
+> Workflow que monitorea el clima de múltiples ciudades simultáneamente, aplica una fórmula propia de probabilidad de lluvia y envía alertas a Discord **únicamente** cuando el riesgo supera el 70%, garantizando cero notificaciones irrelevantes.
+
+**Estado:** `Completado ✓`
+
+| | |
+|---|---|
+| **Trigger** | Automático diario a las 7:00 AM |
+| **API** | OpenWeatherMap (Current Weather Data) |
+| **Ciudades** | Girón, Bucaramanga, Bogotá |
+| **Notificación** | Discord vía Bot Token |
+| **Extra** | Temperatura actual, selección de ciudades, formato visual enriquecido |
+
+```
+Schedule Trigger  ──►  Code  ──►  OpenWeatherMap  ──►  Edit Fields  ──►  IF  ──►  Discord
+```
+
+**[→ Ver documentación completa](./Sistema%20de%20Alertas%20Clim%C3%A1ticas/README.md)**
+
+---
+
 ## Infraestructura — Docker
 
 ```yaml
@@ -127,4 +149,5 @@ docker logs -f n8n       # Ver logs en tiempo real
 - [Documentación oficial n8n](https://docs.n8n.io/)
 - [n8n en Docker](https://docs.n8n.io/hosting/installation/docker/)
 - [ExchangeRate-API](https://www.exchangerate-api.com/docs/free)
+- [OpenWeatherMap API](https://openweathermap.org/api)
 - [Discord Webhooks](https://support.discord.com/hc/en-us/articles/228383668)

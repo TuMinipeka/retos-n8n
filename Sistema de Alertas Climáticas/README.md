@@ -56,7 +56,7 @@ Se necesita un sistema que:
 
 ### Objetivo
 
-Construir una automatizacion robusta con n8n que actue como un asistente meteorologico inteligente, aplicando una formula de ponderacion propia para calcular la probabilidad real de lluvia y enviando alertas enriquecidas a Discord unicamente cuando el umbral de riesgo lo justifica.
+Construimos una automatizacion robusta con n8n que actua como un asistente meteorologico inteligente, aplicando una formula de ponderacion propia para calcular la probabilidad real de lluvia y enviando alertas enriquecidas a Discord unicamente cuando el umbral de riesgo lo justifica.
 
 ### Reglas de negocio
 
@@ -75,7 +75,7 @@ Construir una automatizacion robusta con n8n que actue como un asistente meteoro
 
 ### APIs meteorologicas evaluadas
 
-Se evaluaron varias APIs antes de seleccionar la solucion final:
+Evaluamos varias APIs antes de seleccionar la solucion final:
 
 | API | Ventaja | Desventaja | Seleccionada |
 |:----|:--------|:-----------|:------------:|
@@ -83,13 +83,13 @@ Se evaluaron varias APIs antes de seleccionar la solucion final:
 | WeatherAPI | Interfaz amigable | Menos datos en tier gratuito | NO |
 | Open-Meteo | Sin API key requerida | Menor cobertura en ciudades colombianas | NO |
 
-**Eleccion final: OpenWeatherMap** — provee variables clave como `main.humidity`, `clouds.all`, `main.temp` y `weather[0].description` con la granularidad necesaria para calcular la probabilidad de lluvia de forma matematica.
+**Eleccion final: OpenWeatherMap** — nos provee variables clave como `main.humidity`, `clouds.all`, `main.temp` y `weather[0].description` con la granularidad necesaria para calcular la probabilidad de lluvia de forma matematica.
 
 <br>
 
 ### Formula de probabilidad de lluvia
 
-Tras investigar los factores meteorologicos mas correlacionados con la precipitacion, se diseno la siguiente formula ponderada:
+Tras investigar los factores meteorologicos mas correlacionados con la precipitacion, disenamos la siguiente formula ponderada:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -563,7 +563,7 @@ El motor de items de n8n aisla cada ciudad de forma independiente. Si Bogota sup
 
 ## 8 — Mejoras que se lograron
 
-El enunciado del reto define una serie de **puntos extra** que van mas alla de los requisitos minimos. A continuacion se documenta cuales fueron implementados exitosamente en este proyecto.
+El enunciado del reto define una serie de **puntos extra** que van mas alla de los requisitos minimos. A continuacion documentamos cuales logramos implementar exitosamente.
 
 <br>
 
@@ -582,7 +582,7 @@ El enunciado del reto define una serie de **puntos extra** que van mas alla de l
 
 ### Detalle — IF Node como mecanismo de niveles de alerta
 
-El enunciado solicita como punto extra **cambiar el mensaje segun el nivel de lluvia**. La implementacion inicial de esta logica se realizo a traves del **nodo IF**, que actua como compuerta condicional basada en la probabilidad calculada.
+El enunciado solicita como punto extra **cambiar el mensaje segun el nivel de lluvia**. La implementacion inicial de esta logica la realizamos a traves del **nodo IF**, que actua como compuerta condicional basada en la probabilidad calculada.
 
 **Como funciona:**
 
@@ -604,7 +604,7 @@ El enunciado solicita como punto extra **cambiar el mensaje segun el nivel de ll
 
 El nodo IF evalua la variable `probabilidad_lluvia` (calculada en el nodo Edit Fields) y bifurca el flujo: solo los items que superan el umbral del 70% continuan hacia la notificacion de Discord. Los items que no cumplen la condicion detienen su ejecucion de forma silenciosa.
 
-Esta logica es el **requisito minimo cumplido y punto de partida** para una futura implementacion de mensajes diferenciados por nivel de severidad (moderado / alto / critico), que se tiene prevista como proxima iteracion del proyecto.
+Esta logica es nuestro **requisito minimo cumplido y punto de partida** para una futura implementacion de mensajes diferenciados por nivel de severidad (moderado / alto / critico), que tenemos prevista como proxima iteracion del proyecto.
 
 **Evidencia del nodo IF configurado:**
 
@@ -616,13 +616,13 @@ Esta logica es el **requisito minimo cumplido y punto de partida** para una futu
 
 ### Detalle — Temperatura actual en el mensaje
 
-El mensaje enviado a Discord incluye la temperatura actual extraida de la API, cumpliendo el punto extra solicitado:
+El mensaje que enviamos a Discord incluye la temperatura actual extraida de la API, cumpliendo el punto extra solicitado:
 
 ```
 Temperatura actual:  {{ $json.temperatura }}°C
 ```
 
-Esta variable proviene de `main.temp` en la respuesta JSON de OpenWeatherMap y se mapea en el nodo Edit Fields antes de ser inyectada en la plantilla del mensaje.
+Esta variable proviene de `main.temp` en la respuesta JSON de OpenWeatherMap y la mapeamos en el nodo Edit Fields antes de inyectarla en la plantilla del mensaje.
 
 <br>
 
@@ -630,7 +630,7 @@ Esta variable proviene de `main.temp` en la respuesta JSON de OpenWeatherMap y s
 
 ### Detalle — Seleccion de multiples ciudades
 
-En lugar de monitorear una sola ciudad fija, el proyecto permite seleccionar cualquier numero de ciudades editando el array en el nodo Code:
+En lugar de monitorear una sola ciudad fija, disenamos el flujo para que cualquier persona pueda seleccionar las ciudades que quiera editando el array en el nodo Code:
 
 ```javascript
 return [
@@ -640,7 +640,7 @@ return [
 ];
 ```
 
-Agregar o quitar ciudades no requiere modificar ningun otro nodo del flujo.
+Agregar o quitar ciudades no requiere tocar ningun otro nodo del flujo.
 
 ![Array de ciudades generado por el nodo Code](./evidencias/itemsnode.png)
 
@@ -665,19 +665,19 @@ Mensaje de alerta recibido en el canal de Discord cuando la probabilidad de lluv
 ### Lo que aprendimos
 
 **1. El poder del procesamiento por items de n8n**
-No fue necesario construir bucles visuales complejos para manejar multiples ciudades. Al generar un array desde el nodo Code, n8n itera automaticamente cada item a traves de los nodos siguientes, reduciendo significativamente la complejidad visual del flujo.
+No necesitamos construir bucles visuales complejos para manejar multiples ciudades. Al generar un array desde el nodo Code, n8n itera automaticamente cada item a traves de los nodos siguientes, lo que redujo significativamente la complejidad visual de nuestro flujo.
 
 **2. La importancia de transformar los datos antes de aplicar logica**
-El nodo Edit Fields actua como una capa de normalizacion critica. Sin el, seria imposible aplicar la formula de probabilidad o estructurar el mensaje de Discord de forma limpia. Siempre se deben transformar los datos crudos antes de tomar decisiones condicionales.
+Entendimos que el nodo Edit Fields actua como una capa de normalizacion critica. Sin el, nos seria imposible aplicar la formula de probabilidad o estructurar el mensaje de Discord de forma limpia. Aprendimos que siempre hay que transformar los datos crudos antes de tomar decisiones condicionales.
 
 **3. La politica de cero spam es una decision de diseno, no una limitacion**
-Dejar la rama *False* del nodo IF intencionalmente vacia es una decision deliberada de arquitectura. Un sistema que notifica cuando no hay nada importante que comunicar pierde la confianza del usuario a largo plazo.
+Decidimos dejar la rama *False* del nodo IF intencionalmente vacia como una decision deliberada de arquitectura. Un sistema que notifica cuando no hay nada importante que comunicar pierde la confianza del usuario a largo plazo.
 
 **4. Las formulas propias superan los campos predefinidos**
-OpenWeatherMap provee un campo `pop` (probability of precipitation) en su endpoint de pronostico, pero no en el de clima actual. Disenar una formula propia a partir de variables correlacionadas demostro ser una solucion efectiva y totalmente personalizable.
+OpenWeatherMap provee un campo `pop` (probability of precipitation) en su endpoint de pronostico, pero no en el de clima actual. Disenar nuestra propia formula a partir de variables correlacionadas demostro ser una solucion mas efectiva y totalmente personalizable.
 
 **5. n8n como plataforma de produccion real**
-La combinacion de Schedule Trigger + procesamiento condicional + notificacion a mensajeria instantanea es un patron de arquitectura utilizado en sistemas de alertas empresariales reales. Este proyecto demuestra que n8n no es solo una herramienta de prototipado.
+La combinacion de Schedule Trigger + procesamiento condicional + notificacion a mensajeria instantanea es un patron de arquitectura utilizado en sistemas de alertas empresariales reales. Este proyecto nos demuestra que n8n no es solo una herramienta de prototipado.
 
 <br>
 
