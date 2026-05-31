@@ -32,8 +32,9 @@
 | 5 | [Capturas del workflow](#5--capturas-del-workflow) |
 | 6 | [APIs utilizadas](#6--apis-utilizadas) |
 | 7 | [Resultados obtenidos](#7--resultados-obtenidos) |
-| 8 | [Capturas de Discord](#8--capturas-de-discord) |
-| 9 | [Conclusiones finales](#9--conclusiones-finales) |
+| 8 | [Mejoras que se lograron](#8--mejoras-que-se-lograron) |
+| 9 | [Capturas de Discord](#9--capturas-de-discord) |
+| 10 | [Conclusiones finales](#10--conclusiones-finales) |
 
 <br>
 
@@ -265,6 +266,8 @@ PASO 4  →  Espera hasta 2 horas para que la key se active por primera vez
 0 7 * * *   →   Cada dia a las 7:00 AM
 ```
 
+![Configuracion del Schedule Trigger](./evidencias/scheduletrigger.png)
+
 ---
 
 ### Paso 3 — Nodo Code (Lista de ciudades)
@@ -412,6 +415,14 @@ Arquitectura completa del workflow mostrando la cadena de nodos:
 
 ---
 
+### Configuracion del Schedule Trigger (Horario automatico)
+
+Nodo Schedule Trigger configurado para disparar el workflow todos los dias a las 7:00 AM sin intervencion manual.
+
+![Configuracion del Schedule Trigger](./evidencias/scheduletrigger.png)
+
+---
+
 ### Configuracion del nodo IF (Filtro logico)
 
 Detalle de la condicion configurada en el nodo IF: `probabilidad_lluvia >= 70`.
@@ -550,7 +561,94 @@ El motor de items de n8n aisla cada ciudad de forma independiente. Si Bogota sup
 
 ---
 
-## 8 — Capturas de Discord
+## 8 — Mejoras que se lograron
+
+El enunciado del reto define una serie de **puntos extra** que van mas alla de los requisitos minimos. A continuacion se documenta cuales fueron implementados exitosamente en este proyecto.
+
+<br>
+
+### Resumen de puntos extra
+
+| Punto extra | Estado | Evidencia |
+|:------------|:------:|:---------:|
+| Agregar temperatura actual al mensaje | **[LOGRADO]** | `botdiscordfuncionando.png` |
+| Permitir seleccionar ciudades | **[LOGRADO]** | `itemsnode.png` |
+| Mejorar el formato visual del mensaje | **[LOGRADO]** | `botdiscordfuncionando.png` |
+| Cambiar el mensaje segun el nivel de lluvia | **[LOGRADO]** | `parametrosif.png` |
+
+<br>
+
+---
+
+### Detalle — IF Node como mecanismo de niveles de alerta
+
+El enunciado solicita como punto extra **cambiar el mensaje segun el nivel de lluvia**. La implementacion inicial de esta logica se realizo a traves del **nodo IF**, que actua como compuerta condicional basada en la probabilidad calculada.
+
+**Como funciona:**
+
+```
+  probabilidad_lluvia calculada
+           │
+           ▼
+  ┌────────────────────────────────┐
+  │         IF  NODE               │
+  │  Condicion: prob >= 70         │
+  └──────────┬─────────────────────┘
+             │
+      ┌──────┴───────┐
+      │ TRUE         │ FALSE
+      ▼              ▼
+  ALERTA         Sin accion
+  enviada        (cero spam)
+```
+
+El nodo IF evalua la variable `probabilidad_lluvia` (calculada en el nodo Edit Fields) y bifurca el flujo: solo los items que superan el umbral del 70% continuan hacia la notificacion de Discord. Los items que no cumplen la condicion detienen su ejecucion de forma silenciosa.
+
+Esta logica es el **requisito minimo cumplido y punto de partida** para una futura implementacion de mensajes diferenciados por nivel de severidad (moderado / alto / critico), que se tiene prevista como proxima iteracion del proyecto.
+
+**Evidencia del nodo IF configurado:**
+
+![Configuracion del nodo IF — Logica condicional implementada](./evidencias/parametrosif.png)
+
+<br>
+
+---
+
+### Detalle — Temperatura actual en el mensaje
+
+El mensaje enviado a Discord incluye la temperatura actual extraida de la API, cumpliendo el punto extra solicitado:
+
+```
+Temperatura actual:  {{ $json.temperatura }}°C
+```
+
+Esta variable proviene de `main.temp` en la respuesta JSON de OpenWeatherMap y se mapea en el nodo Edit Fields antes de ser inyectada en la plantilla del mensaje.
+
+<br>
+
+---
+
+### Detalle — Seleccion de multiples ciudades
+
+En lugar de monitorear una sola ciudad fija, el proyecto permite seleccionar cualquier numero de ciudades editando el array en el nodo Code:
+
+```javascript
+return [
+  { json: { ciudad: "Giron, CO" } },
+  { json: { ciudad: "Bucaramanga, CO" } },
+  { json: { ciudad: "Bogota, CO" } }
+];
+```
+
+Agregar o quitar ciudades no requiere modificar ningun otro nodo del flujo.
+
+![Array de ciudades generado por el nodo Code](./evidencias/itemsnode.png)
+
+<br>
+
+---
+
+## 9 — Capturas de Discord
 
 ### Evidencia de funcionamiento — Alerta recibida en Discord
 
@@ -562,7 +660,7 @@ Mensaje de alerta recibido en el canal de Discord cuando la probabilidad de lluv
 
 ---
 
-## 9 — Conclusiones finales
+## 10 — Conclusiones finales
 
 ### Lo que aprendimos
 
@@ -595,7 +693,7 @@ La combinacion de Schedule Trigger + procesamiento condicional + notificacion a 
 | **Pronostico extendido** | Integrar el endpoint `/forecast` para alertar con 5 dias de anticipacion |
 | **Historial de alertas** | Agregar nodo Spreadsheet o Airtable para registrar cada notificacion enviada |
 | **Canal de Telegram** | Configurar Telegram como canal alternativo de notificacion |
-| **Severidad dinamica** | Logica de niveles: moderada / alta / critica segun el porcentaje calculado |
+| **Mensajes por nivel de severidad** | Evolucionar el IF Node actual a un Switch Node con mensajes diferenciados: moderado / alto / critico |
 | **Geolocalizacion** | Consultar ciudades basadas en la ubicacion de usuarios registrados |
 
 </details>
