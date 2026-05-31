@@ -2,7 +2,7 @@
 
 <h1 align="center">Automatizacion de Procesos con n8n</h1>
 <p align="center">
-  <i>Reto Practico en Parejas — Workflows, APIs y Notificaciones Automaticas · CampusLands 2025</i>
+  <i>Reto Practico en Parejas — Workflows, APIs y Notificaciones Automaticas · CampusLands 2026</i>
 </p>
 
 <br>
@@ -21,7 +21,7 @@
 | **Curso** | Automatizacion de Procesos |
 | **Plataforma** | n8n self-hosted |
 | **Infraestructura** | Docker · America/Bogota |
-| **Entrega** | 2025 |
+| **Entrega** | 2026 |
 
 </div>
 
