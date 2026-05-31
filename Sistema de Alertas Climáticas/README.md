@@ -1,23 +1,11 @@
 <div align="center">
 
-```
-╔══════════════════════════════════════════════════════════════════════╗
-║  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  ║
-║       /\          /\          /\          /\          /\            ║
-║      /  \        /  \        /  \        /  \        /  \          ║
-║_____/    \______/    \______/    \______/    \______/    \__________║
-║  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  '  ║
-╠══════════════════════════════════════════════════════════════════════╣
-║                                                                      ║
-║   S I S T E M A   D E   A L E R T A S   C L I M A T I C A S       ║
-║   ──────────────────────────────────────────────────────────        ║
-║             Automatizacion Meteorologica  ·  n8n                    ║
-║                                                                      ║
-╠══════════════════════════════════════════════════════════════════════╣
-║  [API] OpenWeatherMap  ·  [BOT] Discord  ·  [STATUS] Activo         ║
-╚══════════════════════════════════════════════════════════════════════╝
-```
-
+<h1 align="center">
+  🌩️ SISTEMA DE ALERTAS CLIMÁTICAS 🚨
+</h1>
+<p align="center">
+  <i>Monitoreo, prevención y notificaciones meteorológicas en tiempo real</i>
+</p>
 <br>
 
 [![n8n](https://img.shields.io/badge/n8n-Workflow-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io/)
