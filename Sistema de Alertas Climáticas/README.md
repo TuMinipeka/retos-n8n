@@ -1,165 +1,290 @@
-# 🌦️ Sistema de Alertas Climáticas Automatizadas con n8n
+<div align="center">
 
-> Automatización inteligente que consulta el clima en tiempo real y envía alertas personalizadas a Discord **únicamente** cuando existe una alta probabilidad de lluvia, eliminando el spam y garantizando notificaciones relevantes.
+```
+ _____ _     _____ ____ _____  _    ____       ____ _     ___ __  __    _  _____ ___ ____    _    ____
+/ ____| |   |_   _|  _ \_   _|/ \  / ___|     / ___| |   |_ _|  \/  |  / \|_   _|_ _/ ___|  / \  / ___|
+| |    | |    | | | |_) || | / _ \ \___ \    | |   | |    | || |\/| | / _ \ | |  | | |      / _ \ \___ \
+| |____| |___ | | |  _ < | |/ ___ \ ___) |   | |___| |___ | || |  | |/ ___ \| |  | | |___  / ___ \ ___) |
+ \_____|_____|_| |_| \_\|_/_/   \_\____/     \____|_____|___|_|  |_/_/   \_\_| |___\____\/_/   \_\____/
+```
+
+<br>
+
+[![n8n](https://img.shields.io/badge/n8n-Workflow-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)](https://n8n.io/)
+[![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-API-EB6E4B?style=for-the-badge&logo=openweathermap&logoColor=white)](https://openweathermap.org/)
+[![Discord](https://img.shields.io/badge/Discord-Bot-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+[![Estado](https://img.shields.io/badge/Estado-Activo-4CAF50?style=for-the-badge)](.)
+
+<br>
+
+*Automatizacion inteligente que consulta el clima en tiempo real y envia alertas a Discord*
+*unicamente cuando la probabilidad de lluvia supera el umbral critico del 70%.*
+
+</div>
+
+<br>
+
+```
+════════════════════════════════════════════════════════════════════════════════
+  RETO 2 — CampusLands n8n Challenge  |  Stack: n8n + OpenWeatherMap + Discord
+════════════════════════════════════════════════════════════════════════════════
+```
+
+<br>
+
+## Tabla de contenidos
+
+| # | Seccion |
+|:-:|---------|
+| 1 | [Explicacion del problema](#1--explicacion-del-problema) |
+| 2 | [Investigacion realizada](#2--investigacion-realizada) |
+| 3 | [Prerrequisitos](#3--prerrequisitos) |
+| 4 | [Desarrollo paso a paso](#4--desarrollo-paso-a-paso) |
+| 5 | [Capturas del workflow](#5--capturas-del-workflow) |
+| 6 | [APIs utilizadas](#6--apis-utilizadas) |
+| 7 | [Resultados obtenidos](#7--resultados-obtenidos) |
+| 8 | [Capturas de Discord](#8--capturas-de-discord) |
+| 9 | [Conclusiones finales](#9--conclusiones-finales) |
+
+<br>
 
 ---
 
-## 📋 Tabla de contenidos
-
-1. [Explicación del problema](#-explicación-del-problema)
-2. [Investigación realizada](#-investigación-realizada)
-3. [Prerrequisitos](#-prerrequisitos)
-4. [Desarrollo paso a paso](#️-desarrollo-paso-a-paso)
-5. [Capturas del workflow](#️-capturas-del-workflow)
-6. [APIs utilizadas](#-apis-utilizadas)
-7. [Resultados obtenidos](#-resultados-obtenidos)
-8. [Capturas de Discord](#-capturas-de-discord)
-9. [Conclusiones finales](#-conclusiones-finales)
-
----
-
-## 📝 Explicación del problema
+## 1 — Explicacion del problema
 
 ### Contexto
 
-El monitoreo del clima de forma manual es ineficiente y propenso a errores humanos. Las aplicaciones meteorológicas genéricas envían notificaciones sin distinción, lo que genera fatiga de alertas en los usuarios, quienes terminan ignorándolas por completo.
+El monitoreo del clima de forma manual es ineficiente y propenso a errores humanos. Las aplicaciones meteorologicas genericas envian notificaciones sin distincion, lo que genera fatiga de alertas en los usuarios, quienes terminan ignorandolas por completo.
 
 ### Problema central
 
 Se necesita un sistema que:
-- Consulte el clima automáticamente en horarios programados.
-- Evalúe **matemáticamente** si realmente existe riesgo de lluvia.
-- Notifique **solo cuando sea necesario**, respetando la atención del usuario.
-- Sea capaz de monitorear **múltiples ciudades simultáneamente** sin duplicar la lógica del flujo.
+- Consulte el clima automaticamente en horarios programados.
+- Evalue **matematicamente** si realmente existe riesgo de lluvia.
+- Notifique **solo cuando sea necesario**, respetando la atencion del usuario.
+- Sea capaz de monitorear **multiples ciudades simultaneamente** sin duplicar la logica del flujo.
 
 ### Objetivo
 
-Construir una automatización robusta con n8n que actúe como un asistente meteorológico inteligente, aplicando una fórmula de ponderación propia para calcular la probabilidad real de lluvia y enviando alertas enriquecidas a Discord únicamente cuando el umbral de riesgo lo justifica.
+Construir una automatizacion robusta con n8n que actue como un asistente meteorologico inteligente, aplicando una formula de ponderacion propia para calcular la probabilidad real de lluvia y enviando alertas enriquecidas a Discord unicamente cuando el umbral de riesgo lo justifica.
 
 ### Reglas de negocio
 
-| Regla | Descripción |
-|---|---|
+| Regla | Descripcion |
+|:------|:------------|
 | **Umbral de alerta** | Solo se notifica si `probabilidad_lluvia >= 70%` |
-| **Cero spam** | Si ninguna ciudad supera el umbral, no se envía ningún mensaje |
-| **Multi-ciudad** | El flujo evalúa todas las ciudades en una sola ejecución |
-| **Horario automático** | El sistema se ejecuta solo, sin intervención manual |
+| **Cero spam** | Si ninguna ciudad supera el umbral, no se envia ningun mensaje |
+| **Multi-ciudad** | El flujo evalua todas las ciudades en una sola ejecucion |
+| **Horario automatico** | El sistema se ejecuta solo, sin intervencion manual |
+
+<br>
 
 ---
 
-## 🔍 Investigación realizada
+## 2 — Investigacion realizada
 
-### APIs meteorológicas evaluadas
+### APIs meteorologicas evaluadas
 
-Se evaluaron varias APIs antes de seleccionar la solución final:
+Se evaluaron varias APIs antes de seleccionar la solucion final:
 
 | API | Ventaja | Desventaja | Seleccionada |
-|---|---|---|---|
-| **OpenWeatherMap** | Gratuita, baja latencia, respuesta JSON detallada | Límite de 60 req/min en tier free | ✅ Sí |
-| WeatherAPI | Interfaz amigable | Menos datos en tier gratuito | ❌ No |
-| Open-Meteo | Sin API key | Menor cobertura en ciudades colombianas | ❌ No |
+|:----|:--------|:-----------|:------------:|
+| **OpenWeatherMap** | Gratuita, baja latencia, respuesta JSON detallada | Limite de 60 req/min en tier free | **SI** |
+| WeatherAPI | Interfaz amigable | Menos datos en tier gratuito | NO |
+| Open-Meteo | Sin API key requerida | Menor cobertura en ciudades colombianas | NO |
 
-**Elección final: OpenWeatherMap** — provee variables clave como `main.humidity`, `clouds.all`, `main.temp` y `weather[0].description` con la granularidad necesaria para calcular la probabilidad de lluvia de forma matemática.
+**Eleccion final: OpenWeatherMap** — provee variables clave como `main.humidity`, `clouds.all`, `main.temp` y `weather[0].description` con la granularidad necesaria para calcular la probabilidad de lluvia de forma matematica.
 
-### Fórmula de probabilidad de lluvia
+<br>
 
-Tras investigar los factores meteorológicos más correlacionados con la precipitación, se diseñó la siguiente fórmula ponderada:
-`
+### Formula de probabilidad de lluvia
+
+Tras investigar los factores meteorologicos mas correlacionados con la precipitacion, se diseno la siguiente formula ponderada:
+
 ```
-probabilidad_lluvia = (Humedad * 0.6) + (Nubosidad * 0.4)
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│   probabilidad_lluvia = (Humedad × 0.6) + (Nubosidad × 0.4)  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
 ```
-![captura evidencia formula del nodo set edit field](./evidencias/probabilidadlluvia.png)
 
-**Justificación de los pesos:**
-- **Humedad (60%):** Es el indicador más directo de precipitación inminente. Una humedad superior al 80% es altamente predictiva de lluvia.
-- **Nubosidad (40%):** Complementa la humedad. Un cielo completamente nublado sin alta humedad puede no generar lluvia.
+![Captura evidencia formula del nodo Edit Fields](./evidencias/probabilidadlluvia.png)
 
-> **Ejemplo:** Humedad = 85%, Nubosidad = 90% → `(85 * 0.6) + (90 * 0.4) = 51 + 36 = 87%` ✅ Se envía alerta.
+**Justificacion de los pesos:**
 
-### Procesamiento paralelo en n8n
+| Variable | Peso | Razon |
+|:---------|:----:|:------|
+| **Humedad** | 60% | Indicador mas directo de precipitacion inminente. Humedad > 80% es altamente predictiva. |
+| **Nubosidad** | 40% | Complementa la humedad. Cielo nublado sin alta humedad puede no generar lluvia. |
 
-Se investigó la arquitectura de procesamiento de ítems de n8n. Cuando un nodo genera un array de objetos JSON, los nodos siguientes procesan **cada ítem de forma independiente y secuencial**. Esto permite evaluar N ciudades sin construir bucles visuales complejos, simplemente inyectando un array desde el nodo Code.
+> **Ejemplo practico:**
+> Humedad = 85%, Nubosidad = 90%
+> `(85 × 0.6) + (90 × 0.4) = 51 + 36 = 87%` → **ALERTA ENVIADA**
+
+<br>
+
+### Arquitectura del workflow — Diagrama de flujo
+
+```
+  ┌─────────────────┐
+  │  SCHEDULE       │
+  │  TRIGGER        │   Dispara el flujo todos
+  │  07:00 AM diario│   los dias a las 7 AM
+  └────────┬────────┘
+           │
+           v
+  ┌─────────────────┐
+  │  CODE NODE      │   Genera array con N ciudades
+  │  Lista ciudades │   [ Giron, Bucaramanga, Bogota ]
+  │  [JavaScript]   │   Cada item se procesa por separado
+  └────────┬────────┘
+           │  (3 items)
+           v
+  ┌─────────────────┐
+  │  OPENWEATHERMAP │   Consulta la API para
+  │  API Request    │   CADA ciudad del array
+  │  x ciudad       │   Retorna: temp, humedad, nubosidad
+  └────────┬────────┘
+           │
+           v
+  ┌─────────────────┐
+  │  EDIT FIELDS    │   Calcula probabilidad_lluvia
+  │  Transformacion │   = (Humedad × 0.6) + (Nubosidad × 0.4)
+  │  de datos       │   Normaliza campos del JSON
+  └────────┬────────┘
+           │
+           v
+  ┌─────────────────┐
+  │  IF NODE        │
+  │  prob >= 70?    │
+  └────┬───────┬────┘
+       │ TRUE  │ FALSE
+       │       │
+       v       v
+  ┌─────────┐  ┌──────────────┐
+  │ DISCORD │  │  [FIN]       │
+  │ Alerta  │  │  Sin accion  │
+  │ enviada │  │  Cero spam   │
+  └─────────┘  └──────────────┘
+```
 
 ### Nodos clave estudiados
 
-- **Schedule Trigger:** Disparador basado en cron para ejecuciones programadas.
-- **Code Node:** Ejecución de JavaScript puro para generar o transformar datos.
-- **HTTP Request / OpenWeatherMap Node:** Conexión a APIs externas con credenciales.
-- **Edit Fields (Set Node):** Creación y transformación de variables calculadas.
-- **IF Node:** Lógica condicional booleana para bifurcar el flujo.
-- **Discord Node:** Envío de mensajes formateados mediante webhook o bot.
+<details>
+<summary><strong>Ver descripcion de cada nodo utilizado</strong></summary>
+
+<br>
+
+| Nodo | Funcion |
+|:-----|:--------|
+| **Schedule Trigger** | Disparador basado en cron para ejecuciones programadas sin intervencion manual |
+| **Code Node** | Ejecucion de JavaScript puro para generar o transformar datos estructurados |
+| **OpenWeatherMap Node** | Conexion nativa a la API meteorologica con manejo de credenciales |
+| **Edit Fields (Set Node)** | Creacion y transformacion de variables calculadas a partir de datos crudos |
+| **IF Node** | Logica condicional booleana para bifurcar el flujo segun el umbral definido |
+| **Discord Node** | Envio de mensajes Markdown formateados mediante bot o webhook |
+
+</details>
+
+<br>
 
 ---
 
-## 🛠️ Prerrequisitos
+## 3 — Prerrequisitos
 
-Antes de comenzar, asegúrate de tener lo siguiente:
+Antes de comenzar, asegurate de tener lo siguiente:
 
 ### Herramientas necesarias
 
-- [n8n](https://n8n.io/) instalado localmente o una cuenta en [n8n.io Cloud](https://app.n8n.io/)
+- [n8n](https://n8n.io/) instalado localmente **o** cuenta en [n8n.io Cloud](https://app.n8n.io/)
 - Cuenta gratuita en [OpenWeatherMap](https://openweathermap.org/api)
 - Servidor de Discord con permisos para crear bots o webhooks
 
-### Cómo obtener la API Key de OpenWeatherMap
+<br>
 
-1. Regístrate en [https://openweathermap.org/](https://openweathermap.org/)
-2. Ve a tu perfil → **My API Keys**
-3. Copia la API Key predeterminada (o crea una nueva)
-4. Espera hasta 2 horas para que la key se active por primera vez
+<details>
+<summary><strong>Como obtener la API Key de OpenWeatherMap</strong></summary>
 
-### Cómo configurar el bot de Discord
+<br>
 
-**Opción A — Webhook (más simple):**
-1. Ve a tu servidor de Discord → canal destino → ⚙️ **Editar canal**
-2. Sección **Integraciones** → **Webhooks** → **Nuevo Webhook**
-3. Asigna un nombre y foto al bot, luego copia la **URL del Webhook**
+```
+PASO 1  →  Registrate en https://openweathermap.org/
+PASO 2  →  Ve a tu perfil  →  "My API Keys"
+PASO 3  →  Copia la API Key predeterminada (o crea una nueva)
+PASO 4  →  Espera hasta 2 horas para que la key se active por primera vez
+```
 
-**Opción B — Bot con token (usada en este proyecto):**
-1. Ve al [Discord Developer Portal](https://discord.com/developers/applications)
-2. Crea una nueva aplicación → sección **Bot** → **Add Bot**
-3. Copia el **Token** del bot
-4. En **OAuth2 → URL Generator**, selecciona los scopes `bot` y el permiso `Send Messages`
-5. Usa la URL generada para invitar el bot a tu servidor
+> **Nota:** El tier gratuito permite hasta 1,000 llamadas diarias, suficiente para monitorear decenas de ciudades con ejecuciones cada hora.
+
+</details>
+
+<details>
+<summary><strong>Como configurar el bot de Discord</strong></summary>
+
+<br>
+
+**Opcion A — Webhook (mas simple):**
+
+```
+1. Ve a tu servidor de Discord  →  canal destino  →  [Editar canal]
+2. Seccion "Integraciones"  →  "Webhooks"  →  "Nuevo Webhook"
+3. Asigna un nombre y foto al bot
+4. Copia la URL del Webhook generada
+```
+
+**Opcion B — Bot con token (usada en este proyecto):**
+
+```
+1. Ve al Discord Developer Portal  →  "New Application"
+2. Seccion "Bot"  →  "Add Bot"  →  Copia el Token
+3. OAuth2  →  URL Generator  →  Scopes: [bot]  →  Permisos: [Send Messages]
+4. Usa la URL generada para invitar el bot a tu servidor
+```
+
+</details>
+
+<br>
 
 ---
 
-## ⚙️ Desarrollo paso a paso
+## 4 — Desarrollo paso a paso
 
 ### Paso 1 — Crear un nuevo workflow en n8n
 
-1. Abre n8n y haz clic en **"New Workflow"**
-2. Asigna el nombre: `Sistema de Alertas Climáticas`
-3. Guarda el workflow con `Ctrl + S` antes de comenzar
+```
+1. Abre n8n y haz clic en "New Workflow"
+2. Asigna el nombre:  Sistema de Alertas Climaticas
+3. Guarda con  Ctrl + S  antes de comenzar
+```
 
 ---
 
-### Paso 2 — Nodo Schedule Trigger (Disparador automático)
+### Paso 2 — Nodo Schedule Trigger
 
-Este nodo inicia el flujo automáticamente según un horario definido.
+> Este nodo inicia el flujo automaticamente segun el horario definido.
 
-1. Haz clic en el **"+"** para agregar el primer nodo
-2. Busca y selecciona **"Schedule Trigger"**
-3. Configura los parámetros:
-   - **Trigger Interval:** `Days`
-   - **Days Between Triggers:** `1`
-   - **Trigger at Hour:** `7` (7:00 AM)
-   - **Trigger at Minute:** `0`
-4. Esto ejecutará el flujo todos los días a las 7:00 AM
+| Parametro | Valor |
+|:----------|:------|
+| Trigger Interval | `Days` |
+| Days Between Triggers | `1` |
+| Trigger at Hour | `7` |
+| Trigger at Minute | `0` |
 
-> **Alternativa con cron:** Si prefieres expresión cron, usa `0 7 * * *` (cada día a las 7 AM).
+```
+// Alternativa con expresion cron:
+0 7 * * *   →   Cada dia a las 7:00 AM
+```
 
 ---
 
-### Paso 3 — Nodo Code (Generar lista de ciudades)
+### Paso 3 — Nodo Code (Lista de ciudades)
 
-Este nodo inyecta el listado de ciudades que serán consultadas.
+> Este nodo inyecta el array de ciudades. Cada objeto del array se convierte en un item independiente que recorre el resto del flujo.
 
-1. Agrega un nodo **"Code"** conectado al Schedule Trigger
-2. Configura:
-   - **Language:** `JavaScript`
-   - **Mode:** `Run Once for All Items`
-3. Pega el siguiente código:
+- **Language:** `JavaScript`
+- **Mode:** `Run Once for All Items`
 
 ```javascript
 return [
@@ -169,151 +294,179 @@ return [
 ];
 ```
 
-4. Haz clic en **"Execute Node"** para verificar que genera 3 ítems correctamente
-
-> **Para agregar más ciudades:** Añade objetos al array con el formato `{ ciudad: "NombreCiudad,CodigoPais" }`. Los códigos de país siguen el estándar ISO 3166-1 alpha-2 (CO = Colombia, US = Estados Unidos, MX = México).
-
----
-
-### Paso 4 — Nodo OpenWeatherMap (Consulta de clima)
-
-Este nodo consulta la API por cada ciudad generada en el paso anterior.
-
-1. Agrega el nodo **"OpenWeatherMap"** conectado al nodo Code
-2. Configura las credenciales:
-   - Haz clic en **"Create new credential"**
-   - Pega tu **API Key** de OpenWeatherMap
-   - Guarda con el nombre `OpenWeatherMap API`
-3. Configura los parámetros del nodo:
-   - **Operation:** `Current Weather`
-   - **City:** `{{ $json.ciudad }}` (expresión dinámica)
-   - **Language:** `Spanish` (opcional, para la descripción del clima)
-4. Ejecuta el nodo y verifica que devuelve datos para cada ciudad
-
-**Variables clave que usaremos del JSON de respuesta:**
-
-```
-main.humidity    → Humedad relativa (0-100%)
-clouds.all       → Porcentaje de nubosidad (0-100%)
-main.temp        → Temperatura actual en °C
-name             → Nombre oficial de la ciudad
-weather[0].description → Descripción textual del clima
-```
+> **Para agregar mas ciudades:** Incorpora objetos al array con el formato `{ ciudad: "Nombre,CodigoPais" }`.
+> Los codigos de pais siguen el estandar ISO 3166-1 alpha-2: CO = Colombia, MX = Mexico, US = Estados Unidos.
 
 ---
 
-### Paso 5 — Nodo Edit Fields (Calcular probabilidad de lluvia)
+### Paso 4 — Nodo OpenWeatherMap
 
-Este nodo transforma los datos crudos de la API y calcula nuestra métrica de riesgo.
+> Consulta la API por cada ciudad del array de forma automatica.
 
-1. Agrega el nodo **"Edit Fields (Set)"** conectado al nodo OpenWeatherMap
-2. En la sección de campos, agrega los siguientes campos :
+**Configuracion de credenciales:**
+```
+1. Haz clic en "Create new credential"
+2. Pega tu API Key de OpenWeatherMap
+3. Guarda como:  OpenWeatherMap API
+```
 
-{{ ($json.main.humidity * 0.6) + ($json.clouds.all * 0.4) }}
+**Parametros del nodo:**
 
-3. Ejecuta el nodo y verifica que `probabilidad_lluvia` aparece calculada correctamente
+| Campo | Valor |
+|:------|:------|
+| Operation | `Current Weather` |
+| City | `{{ $json.ciudad }}` |
+| Language | `Spanish` |
+
+**Variables clave de la respuesta JSON:**
+
+```
+main.humidity          →  Humedad relativa (0-100%)
+clouds.all             →  Porcentaje de nubosidad (0-100%)
+main.temp              →  Temperatura actual en Celsius
+name                   →  Nombre oficial de la ciudad
+weather[0].description →  Descripcion textual del clima
+```
 
 ---
 
-### Paso 6 — Nodo IF (Filtro lógico de alertas)
+### Paso 5 — Nodo Edit Fields (Calcular probabilidad)
 
-Este nodo bifurca el flujo: solo las ciudades con alta probabilidad de lluvia avanzan hacia la notificación.
+> Transforma los datos crudos de la API y calcula la metrica de riesgo de lluvia.
 
-1. Agrega el nodo **"IF"** conectado al nodo Edit Fields
-2. Configura la condición:
-   - **Value 1:** `{{ $json.probabilidad_lluvia }}` (tipo: Number)
-   - **Operation:** `Greater than or equal to`
-   - **Value 2:** `70`
-3. El nodo creará dos ramas:
-   - ✅ **True:** ciudades con probabilidad ≥ 70% → continúan al nodo Discord
-   - ❌ **False:** ciudades con probabilidad < 70% → rama vacía (fin del flujo)
+Agrega los siguientes campos en el nodo **Edit Fields (Set)**:
 
-> **La rama False se deja intencionalmente vacía.** Esto implementa la política de "cero spam": si ninguna ciudad supera el umbral, el workflow termina sin enviar ninguna notificación.
+| Nombre del campo | Tipo | Expresion |
+|:-----------------|:----:|:----------|
+| `ciudad` | String | `{{ $json.name }}` |
+| `temperatura` | Number | `{{ $json.main.temp }}` |
+| `humedad` | Number | `{{ $json.main.humidity }}` |
+| `nubosidad` | Number | `{{ $json.clouds.all }}` |
+| `descripcion` | String | `{{ $json.weather[0].description }}` |
+| `probabilidad_lluvia` | Number | `{{ ($json.main.humidity * 0.6) + ($json.clouds.all * 0.4) }}` |
+
+```
+[!] Activa la opcion "Keep Only Set" para limpiar campos innecesarios
+    de la respuesta cruda de la API antes de pasar al nodo IF.
+```
 
 ---
 
-### Paso 7 — Nodo Discord (Envío de la alerta)
+### Paso 6 — Nodo IF (Filtro logico de alertas)
 
-Este nodo envía el mensaje formateado al canal de Discord configurado.
+> Este nodo bifurca el flujo. Solo las ciudades con alta probabilidad de lluvia avanzan hacia la notificacion.
 
-1. Agrega el nodo **"Discord"** conectado a la rama **True** del nodo IF
-2. Configura las credenciales:
-   - Selecciona **"Bot Token"** o **"Webhook"** según tu configuración
-   - Ingresa el token del bot o la URL del webhook
-3. Configura el mensaje con el siguiente contenido (sintaxis Markdown de Discord):
+**Condicion configurada:**
 
 ```
-🌧️ **ALERTA DE LLUVIA — {{ $json.ciudad }}**
-
-📊 **Probabilidad de lluvia:** {{ Math.round($json.probabilidad_lluvia) }}%
-🌡️ **Temperatura actual:** {{ $json.temperatura }}°C
-💧 **Humedad:** {{ $json.humedad }}%
-☁️ **Nubosidad:** {{ $json.nubosidad }}%
-🌤️ **Condición:** {{ $json.descripcion }}
-
-⚠️ Se recomienda llevar paraguas hoy.
+┌────────────────────────────────────────────┐
+│  Value 1:  {{ $json.probabilidad_lluvia }} │
+│  Operador: Greater than or equal to        │
+│  Value 2:  70                              │
+└────────────────────────────────────────────┘
 ```
 
-4. Asegúrate de seleccionar el **canal correcto** donde el bot tiene permisos de escritura
-5. Ejecuta el nodo para enviar un mensaje de prueba
+**Resultado de las ramas:**
+
+```
+  TRUE  →  prob_lluvia >= 70  →  Continua al nodo Discord
+  FALSE →  prob_lluvia <  70  →  [FIN] Rama vacia, no se envia nada
+```
+
+> **Diseno intencional:** La rama *False* se deja vacia para implementar la politica de cero spam. Si ninguna ciudad supera el umbral, el workflow finaliza sin ninguna notificacion.
+
+---
+
+### Paso 7 — Nodo Discord (Envio de la alerta)
+
+> Envia el mensaje formateado al canal de Discord configurado.
+
+**Credenciales:** Selecciona `Bot Token` o `Webhook URL` segun tu configuracion.
+
+**Plantilla del mensaje** (sintaxis Markdown de Discord):
+
+```
+**ALERTA DE LLUVIA — {{ $json.ciudad }}**
+
+Probabilidad de lluvia:  {{ Math.round($json.probabilidad_lluvia) }}%
+Temperatura actual:      {{ $json.temperatura }}°C
+Humedad:                 {{ $json.humedad }}%
+Nubosidad:               {{ $json.nubosidad }}%
+Condicion:               {{ $json.descripcion }}
+
+Se recomienda llevar paraguas hoy.
+```
 
 ---
 
 ### Paso 8 — Activar el workflow
 
-1. Revisa que todos los nodos estén conectados correctamente en la vista del flujo
-2. Haz clic en el toggle **"Active"** (esquina superior derecha) para activar el workflow
-3. El sistema comenzará a ejecutarse automáticamente según el horario configurado
+```
+1. Verifica que todos los nodos esten conectados en la vista del flujo
+2. Haz clic en el toggle "Active" (esquina superior derecha)
+3. El sistema comenzara a ejecutarse segun el horario configurado
+```
 
-> Para una prueba inmediata, haz clic en **"Execute Workflow"** sin necesidad de esperar al horario programado.
+> Para una prueba inmediata sin esperar el horario, haz clic en **"Execute Workflow"**.
+
+<br>
 
 ---
 
-## 🖼️ Capturas del workflow
+## 5 — Capturas del workflow
 
 ### Vista general del flujo completo
 
-Arquitectura completa del workflow mostrando la cadena de nodos: Schedule Trigger → Code → OpenWeatherMap → Edit Fields → IF → Discord.
+Arquitectura completa del workflow mostrando la cadena de nodos:
+`Schedule Trigger` → `Code` → `OpenWeatherMap` → `Edit Fields` → `IF` → `Discord`
 
 ![Vista general del workflow](./evidencias/flujogeneral.png)
 
 ---
 
-### Configuración del nodo IF (Filtro lógico)
+### Configuracion del nodo IF (Filtro logico)
 
-Detalle de la condición configurada en el nodo IF: `probabilidad_lluvia >= 70`.
+Detalle de la condicion configurada en el nodo IF: `probabilidad_lluvia >= 70`.
 
-![Configuración del nodo IF](./evidencias/parametrosif.png)
+![Configuracion del nodo IF](./evidencias/parametrosif.png)
 
 ---
 
 ### Salida del nodo Code (Array de ciudades)
 
-JSON generado por el nodo Code con los 3 ítems que representan las ciudades a monitorear.
+JSON generado por el nodo Code con los 3 items que representan las ciudades a monitorear.
 
 ![Salida del nodo Code](./evidencias/itemsnode.png)
 
+<br>
+
 ---
 
-## 🔌 APIs utilizadas
+## 6 — APIs utilizadas
 
-### 1. OpenWeatherMap API — Current Weather Data
+### OpenWeatherMap API — Current Weather Data
+
+<div align="center">
+
+[![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-Current_Weather_Data-EB6E4B?style=flat-square&logo=openweathermap&logoColor=white)](https://openweathermap.org/current)
+
+</div>
 
 | Detalle | Valor |
-|---|---|
+|:--------|:------|
 | **Endpoint** | `https://api.openweathermap.org/data/2.5/weather` |
-| **Método** | `GET` |
-| **Autenticación** | API Key (query param `appid`) |
-| **Tier utilizado** | Free (hasta 1,000 llamadas/día) |
+| **Metodo** | `GET` |
+| **Autenticacion** | API Key (query param `appid`) |
+| **Tier utilizado** | Free (hasta 1,000 llamadas/dia) |
 | **Formato de respuesta** | JSON |
 
-**Parámetros de la petición:**
+**Parametros de la peticion:**
 
-```
-q       = {ciudad},{pais}   → Ej: "Bucaramanga,CO"
+```bash
+q       = {ciudad},{pais}   # Ej: "Bucaramanga,CO"
 appid   = {tu_api_key}
-units   = metric            → Temperatura en Celsius
-lang    = es                → Descripciones en español
+units   = metric            # Temperatura en Celsius
+lang    = es                # Descripciones en espanol
 ```
 
 **Fragmento de respuesta JSON:**
@@ -336,95 +489,137 @@ lang    = es                → Descripciones en español
 }
 ```
 
-![Configuración del nodo OpenWeatherMap](./evidencias/weatherconfi.png)
+![Configuracion del nodo OpenWeatherMap](./evidencias/weatherconfi.png)
+
+<br>
 
 ---
 
-### 2. Discord API — Bot de notificaciones
+### Discord API — Bot de notificaciones
+
+<div align="center">
+
+[![Discord](https://img.shields.io/badge/Discord-Bot_API-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/developers/docs)
+
+</div>
 
 | Detalle | Valor |
-|---|---|
-| **Método de integración** | Bot Token (nodo nativo de n8n) |
+|:--------|:------|
+| **Metodo de integracion** | Bot Token (nodo nativo de n8n) |
 | **Permisos requeridos** | `Send Messages`, `Embed Links` |
 | **Formato de mensaje** | Markdown de Discord |
 | **Trigger** | Condicional (solo si `probabilidad_lluvia >= 70`) |
 
-El bot fue creado desde el [Discord Developer Portal](https://discord.com/developers/applications) e invitado al servidor con los permisos mínimos necesarios para operar.
+El bot fue creado desde el Discord Developer Portal e invitado al servidor con los permisos minimos necesarios para operar.
 
 ![Bot de Discord configurado](./evidencias/botdiscordcreado.png)
 
+<br>
+
 ---
 
-## 📊 Resultados obtenidos
+## 7 — Resultados obtenidos
 
-### Eficiencia del sistema de filtrado
+### Tabla de escenarios — Sistema de filtrado
 
-El nodo IF funciona como un guardián que garantiza la relevancia de cada notificación:
+El nodo IF actua como guardian que garantiza la relevancia de cada notificacion:
 
-| Escenario | Humedad | Nubosidad | Probabilidad | Resultado |
-|---|---|---|---|---|
-| Día lluvioso | 85% | 90% | **87%** | ✅ Alerta enviada |
-| Día nublado | 65% | 80% | **71%** | ✅ Alerta enviada |
-| Día parcialmente nublado | 55% | 60% | **57%** | ❌ Sin notificación |
-| Día despejado | 30% | 10% | **22%** | ❌ Sin notificación |
+| Escenario | Humedad | Nubosidad | Probabilidad calculada | Resultado |
+|:----------|:-------:|:---------:|:----------------------:|:---------:|
+| Dia lluvioso | 85% | 90% | **87%** | ALERTA ENVIADA |
+| Dia nublado con humedad | 65% | 80% | **71%** | ALERTA ENVIADA |
+| Dia parcialmente nublado | 55% | 60% | **57%** | SIN NOTIFICACION |
+| Dia despejado | 30% | 10% | **22%** | SIN NOTIFICACION |
+
+<br>
 
 ### Procesamiento multi-ciudad independiente
 
-El sistema evaluó las 3 ciudades configuradas en una sola ejecución. Gracias al motor de ítems de n8n, cada ciudad se procesa de forma aislada:
+```
+Ejecucion unica  →  3 ciudades evaluadas en paralelo
 
-- Si **Bogotá** supera el umbral y **Girón** no → solo se notifica Bogotá
-- Si **ninguna** supera el umbral → no se envía ningún mensaje
-- Si **todas** superan el umbral → se envían 3 mensajes independientes
+  Bogota:      prob = 87%  →  ALERTA ENVIADA
+  Bucaramanga: prob = 71%  →  ALERTA ENVIADA
+  Giron:       prob = 52%  →  [SIN NOTIFICACION]
 
-### Mensajería enriquecida
+  Resultado: 2 mensajes enviados, 1 ciudad filtrada
+```
 
-Los mensajes enviados a Discord incluyen todas las variables dinámicas extraídas del JSON de OpenWeatherMap, entregando contexto completo en cada alerta sin repetición de información.
+El motor de items de n8n aisla cada ciudad de forma independiente. Si Bogota supera el umbral y Giron no, el nodo IF filtra solo el item negativo y notifica exclusivamente el positivo.
+
+<br>
 
 ### Cumplimiento de reglas de negocio
 
 | Regla | Estado |
-|---|---|
-| Umbral de alerta al 70% | ✅ Implementado y verificado |
-| Cero spam en días despejados | ✅ Rama False vacía confirmada |
-| Procesamiento multi-ciudad | ✅ 3 ciudades en una ejecución |
-| Ejecución automática programada | ✅ Cron configurado a las 7 AM |
+|:------|:------:|
+| Umbral de alerta al 70% | **[OK]** Implementado y verificado |
+| Cero spam en dias despejados | **[OK]** Rama False vacia confirmada |
+| Procesamiento multi-ciudad | **[OK]** 3 ciudades en una ejecucion |
+| Ejecucion automatica programada | **[OK]** Cron configurado a las 7 AM |
+
+<br>
 
 ---
 
-## 📱 Capturas de Discord
+## 8 — Capturas de Discord
 
 ### Evidencia de funcionamiento — Alerta recibida en Discord
 
-Mensaje de alerta recibido en el canal de Discord cuando la probabilidad de lluvia superó el umbral del 70%. Se puede observar el formato enriquecido con las variables dinámicas de temperatura, humedad, nubosidad y probabilidad calculada.
+Mensaje de alerta recibido en el canal de Discord cuando la probabilidad de lluvia supero el umbral del 70%. Se puede observar el formato enriquecido con las variables dinamicas de temperatura, humedad, nubosidad y probabilidad calculada.
 
 ![Alerta recibida en Discord](./evidencias/botdiscordfuncionando.png)
 
+<br>
+
 ---
 
-## 💡 Conclusiones finales
+## 9 — Conclusiones finales
 
 ### Lo que aprendimos
 
-1. **El poder del procesamiento por ítems de n8n:** No fue necesario construir bucles visuales complejos para manejar múltiples ciudades. Al generar un array desde el nodo Code, n8n itera automáticamente cada ítem a través de los nodos siguientes, reduciendo significativamente la complejidad visual del flujo.
+**1. El poder del procesamiento por items de n8n**
+No fue necesario construir bucles visuales complejos para manejar multiples ciudades. Al generar un array desde el nodo Code, n8n itera automaticamente cada item a traves de los nodos siguientes, reduciendo significativamente la complejidad visual del flujo.
 
-2. **La importancia de transformar los datos antes de aplicar lógica:** El nodo Edit Fields actúa como una capa de normalización crítica. Sin él, sería imposible aplicar la fórmula de probabilidad o estructurar el mensaje de Discord de forma limpia. Siempre se deben transformar los datos crudos antes de tomar decisiones condicionales.
+**2. La importancia de transformar los datos antes de aplicar logica**
+El nodo Edit Fields actua como una capa de normalizacion critica. Sin el, seria imposible aplicar la formula de probabilidad o estructurar el mensaje de Discord de forma limpia. Siempre se deben transformar los datos crudos antes de tomar decisiones condicionales.
 
-3. **La política de "cero spam" es una decisión de diseño, no una limitación:** Dejar la rama *False* del nodo IF intencionalmente vacía es una decisión deliberada de arquitectura. Un sistema que notifica cuando no hay nada importante que comunicar pierde la confianza del usuario.
+**3. La politica de cero spam es una decision de diseno, no una limitacion**
+Dejar la rama *False* del nodo IF intencionalmente vacia es una decision deliberada de arquitectura. Un sistema que notifica cuando no hay nada importante que comunicar pierde la confianza del usuario a largo plazo.
 
-4. **Las fórmulas propias superan los campos predefinidos:** OpenWeatherMap provee un campo `pop` (probability of precipitation) en su endpoint de pronóstico, pero no en el de clima actual. Diseñar una fórmula propia a partir de variables correlacionadas (humedad + nubosidad) demostró ser una solución efectiva y personalizable.
+**4. Las formulas propias superan los campos predefinidos**
+OpenWeatherMap provee un campo `pop` (probability of precipitation) en su endpoint de pronostico, pero no en el de clima actual. Disenar una formula propia a partir de variables correlacionadas demostro ser una solucion efectiva y totalmente personalizable.
 
-5. **n8n como plataforma de producción real:** Este proyecto no es solo un ejercicio académico. La combinación de Schedule Trigger + procesamiento condicional + notificación a mensajería instantánea es un patrón de arquitectura usado en sistemas de alertas empresariales reales.
+**5. n8n como plataforma de produccion real**
+La combinacion de Schedule Trigger + procesamiento condicional + notificacion a mensajeria instantanea es un patron de arquitectura utilizado en sistemas de alertas empresariales reales. Este proyecto demuestra que n8n no es solo una herramienta de prototipado.
+
+<br>
 
 ### Posibles mejoras futuras
 
-- Integrar el endpoint de **pronóstico de 5 días** (`/forecast`) para alertar con anticipación.
-- Agregar un nodo **Spreadsheet** o **Airtable** para registrar un histórico de las alertas enviadas.
-- Configurar un **canal de Telegram** como canal alternativo de notificación.
-- Añadir lógica de **severidad** (moderada, alta, crítica) con distintos emojis y colores según el porcentaje calculado.
-- Implementar **geolocalización dinámica** para consultar ciudades basadas en la ubicación de los usuarios registrados.
+<details>
+<summary><strong>Ver roadmap de mejoras</strong></summary>
+
+<br>
+
+| Mejora | Descripcion |
+|:-------|:------------|
+| **Pronostico extendido** | Integrar el endpoint `/forecast` para alertar con 5 dias de anticipacion |
+| **Historial de alertas** | Agregar nodo Spreadsheet o Airtable para registrar cada notificacion enviada |
+| **Canal de Telegram** | Configurar Telegram como canal alternativo de notificacion |
+| **Severidad dinamica** | Logica de niveles: moderada / alta / critica segun el porcentaje calculado |
+| **Geolocalizacion** | Consultar ciudades basadas en la ubicacion de usuarios registrados |
+
+</details>
+
+<br>
 
 ---
 
-> **Desarrollado por:** Daniel Santiago Mayorga 
-> **Stack:** n8n · OpenWeatherMap API · Discord Bot API  
-
+```
+════════════════════════════════════════════════════════════════════════════════
+  Desarrollado por: Daniel Santiago Mayorga
+  Stack: n8n  |  OpenWeatherMap API  |  Discord Bot API
+  Rama: feature/daniel/reto2  |  CampusLands n8n Challenge
+════════════════════════════════════════════════════════════════════════════════
+```
